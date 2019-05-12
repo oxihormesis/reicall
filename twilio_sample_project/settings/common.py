@@ -1,3 +1,4 @@
+from django.contrib.messages import constants as messages
 """
 Common Django settings for the project.
 
@@ -29,7 +30,7 @@ ALLOWED_HOSTS = ['*']
 TWIML_APPLICATION_SID = os.environ.get('TWIML_APPLICATION_SID', None)
 if not TWIML_APPLICATION_SID:
     missing_application_sid_message = \
-    """
+        """
     You *must* set a TWIML_APPLICATION_SID environment variable to run this app.
 
     Create a TwiML Application here: https://www.twilio.com/user/account/apps/add and set the Voice request URL to this value:
@@ -41,7 +42,7 @@ if not TWIML_APPLICATION_SID:
 TWILIO_ACCOUNT_SID = os.environ.get('TWILIO_ACCOUNT_SID', None)
 if not TWILIO_ACCOUNT_SID:
     missing_account_sid_message = \
-    """
+        """
     You *must* set a TWILIO_ACCOUNT_SID environment variable to run this app.
     """
     raise ImproperlyConfigured(missing_account_sid_message)
@@ -49,7 +50,7 @@ if not TWILIO_ACCOUNT_SID:
 TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN', None)
 if not TWILIO_AUTH_TOKEN:
     missing_auth_token_message = \
-    """
+        """
     You *must* set a TWILIO_AUTH_TOKEN environment variable to run this app.
     """
     raise ImproperlyConfigured(missing_auth_token_message)
@@ -73,6 +74,7 @@ THIRD_PARTY_APPS = (
 
 LOCAL_APPS = (
     'call_tracking',
+    'accounts',
 )
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -144,7 +146,6 @@ STATIC_URL = '/static/'
 
 # Messages settings for Bootstrap 3
 
-from django.contrib.messages import constants as messages
 MESSAGE_TAGS = {
     messages.ERROR: 'danger'
 }
