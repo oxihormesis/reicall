@@ -10,7 +10,7 @@ def signup_view(request):
         if form.is_valid():
             form.save()
             # then log in here
-            return redirect('call_tracking:home')
+            return redirect('home')
     else:
         form = UserCreationForm()
     return render(request, 'accounts/signup.html', {'form': form})
