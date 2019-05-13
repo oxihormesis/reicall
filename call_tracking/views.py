@@ -15,6 +15,11 @@ from .utils import search_phone_numbers, purchase_phone_number
 
 
 # Home page view and JSON views to power the charts
+def landing_view(request):
+    """Renders the landing page"""
+    return render(request, 'landing.html')
+
+
 def home(request):
     """Renders the home page"""
     context = {}
