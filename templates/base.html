@@ -31,12 +31,18 @@
       </button>
       <a class="navbar-brand" style="color:#ffffff;" href="/">ConeCall </a>
       <ul>
+        {% if user.is_authenticated %}
         <li>
           <form class="logout-link" action="/accounts/logout/" method="post">
             {% csrf_token %}
             <button type="submit">Logout</button>
           </form>
         </li>
+        {% else %}
+        <li><button><a href="accounts/login/">Login</a></button></li>
+        <li><button><a href="accounts/signup/">Signup</a></button></li>
+        <li><button><a href="#">Account</a></button></li>
+        {% endif %}
       </ul>
     </div>
   </div>
