@@ -54,6 +54,7 @@ def leads_by_city(request):
 
 
 # Views for purchase number workflow
+@login_required(login_url="accounts/login/")
 def list_numbers(request):
     """Uses the Twilio API to generate a list of available phone numbers"""
     form = AreaCodeForm(request.POST)
