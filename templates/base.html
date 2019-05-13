@@ -30,9 +30,14 @@
         <span class="icon-bar"></span>
       </button>
       <a class="navbar-brand" style="color:#ffffff;" href="/">ConeCall </a>
-      <form class="logout-link" action="/accounts/logout/" method="post">
-
-      </form>
+      <ul>
+        <li>
+          <form class="logout-link" action="/accounts/logout/" method="post">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+          </form>
+        </li>
+      </ul>
     </div>
   </div>
 
