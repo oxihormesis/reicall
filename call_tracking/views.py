@@ -8,17 +8,20 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import UpdateView
 from twilio.twiml.voice_response import VoiceResponse
+from django.contrib.auth.decorators import login_required
 
 from .forms import AreaCodeForm, PurchaseNumberForm
 from .models import LeadSource, Lead
 from .utils import search_phone_numbers, purchase_phone_number
 
 
+# Home page view and JSON views to power the charts
 def landing_view(request):
     """Renders the landing page"""
     return render(request, 'landing.html')
 
 
+@login_required(login_url="accounts/login/")
 def home(request):
     """Renders the home page"""
     context = {}
