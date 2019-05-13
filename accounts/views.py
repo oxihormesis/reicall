@@ -23,6 +23,8 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
+            if 'next' in request.POST:
+                return redirect(request.POST.get('next'))
             return redirect('home')
     else:
         form = AuthenticationForm()
