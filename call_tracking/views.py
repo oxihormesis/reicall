@@ -30,7 +30,7 @@ def home(request):
     context['form'] = AreaCodeForm({'area_code': '415'})
 
     # Add the list of lead sources
-    context['lead_sources'] = LeadSource.objects.all()
+    context['lead_sources'] = LeadSource.objects.filter(user=request.user)
 
     return render(request, 'index.html', context)
 
