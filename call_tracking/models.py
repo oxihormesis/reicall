@@ -3,6 +3,7 @@ from django.conf import settings
 from django.db.models import Count
 from django.utils.encoding import python_2_unicode_compatible
 from phonenumber_field.modelfields import PhoneNumberField
+from django.contrib.auth.models import User
 
 
 class LeadSourceManager(models.Manager):
@@ -22,10 +23,7 @@ class LeadSourceManager(models.Manager):
 
 @python_2_unicode_compatible
 class LeadSource(models.Model):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        default='user_id')
+    #user = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
     name = models.CharField(
         max_length=100,
         blank=True,
