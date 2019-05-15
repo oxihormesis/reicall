@@ -23,7 +23,7 @@ class LeadSourceManager(models.Manager):
 
 @python_2_unicode_compatible
 class LeadSource(models.Model):
-    #user = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
     name = models.CharField(
         max_length=100,
         blank=True,
