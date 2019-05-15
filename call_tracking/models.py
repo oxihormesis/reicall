@@ -24,7 +24,8 @@ class LeadSourceManager(models.Manager):
 class LeadSource(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,)
+        on_delete=models.CASCADE,
+        default='user_id')
     name = models.CharField(
         max_length=100,
         blank=True,
