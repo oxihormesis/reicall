@@ -4,12 +4,12 @@
 Chart.defaults.global.responsive = true;
 
 // Configure the leadsBySource bar chart
-$.get("/call-tracking/leads-by-source", function(data) {
+$.get("/leads-by-source", function(data) {
   var chartData = [];
-  for (var i=0; i<data.length; i++) {
+  for (var i = 0; i < data.length; i++) {
     chartData.push({
-      value: data[i]['lead__count'],
-      label: data[i]['name']
+      value: data[i]["lead__count"],
+      label: data[i]["name"]
     });
   }
 
@@ -18,15 +18,29 @@ $.get("/call-tracking/leads-by-source", function(data) {
 });
 
 // Configure the leadsByCity bar chart
-$.get("/call-tracking/leads-by-city", function(data) {
+$.get("/leads-by-city", function(data) {
   var chartData = [];
-  for (var i=0; i<data.length; i++) {
+  for (var i = 0; i < data.length; i++) {
     chartData.push({
-      value: data[i]['id__count'],
-      label: data[i]['city']
+      value: data[i]["id__count"],
+      label: data[i]["city"]
     });
   }
 
   var ctx = document.getElementById("leadsByCity").getContext("2d");
   var leadsByCity = new Chart(ctx).Pie(chartData);
+});
+
+// Configure the leadsByZipcode pie chart
+$.get("/leads-by-zipcode", function(data) {
+  var chartData = [];
+  for (var i = 0; i < data.length; i++) {
+    chartData.push({
+      value: data[i]["id__count"],
+      label: data[i]["zipcode"]
+    });
+  }
+
+  var ctx = document.getElementById("leadsByZipcode").getContext("2d");
+  var leadsByZipcode = new Chart(ctx).Pie(chartData);
 });

@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% load bootstrap_tags %}
+{% load phone_number_filter %}
+{% load staticfiles %}
+{% load icons %}
+
+
+{% block title %}localCall{% endblock title %}
+{% block page_css %}
+<style>
+    .widget {
+        background-color: rgba(255, 255, 255, 0.438);
+    }
+
+    .canvas {
+        background-color: #ededee;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script type='text/javascript'>
+    var serializedcalls = {{ calls_json|safe }};
+    console.log(serializedcalls);
+</script>
+
+<div id="app">
+    <h1>Recents</h1>
+    
+    <div class="row">
+    
+    
+        <div class="col">
+    
+            <div class="container py-3 rounded-bottom widget">
+    
+                {% if calls_json %}
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Lead</th>
+                            <th>DateTime</th>
+                            <th>Source</th>
+                            <th>Proxy</th>
+                            <th>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <tr v-for="serializedcall in serializedcalls.slice()">
+                            
+                            <td>    
+                                <button onclick="callLead('" + [[ serializedcall.fields.lead_number ]] + "')" type="button" class="btn btn-primary call-customer-button">
+                                    Call lead
+                                </button>
+                            </td>
+                            <td>[[ serializedcall.fields.lead_number ]]</td>
+                            <td>[[ serializedcall.fields.start_timestamp ]]</td>
+                            <td>[[ serializedcall.fields.lead_source ]]</td>
+                            <td>[[ serializedcall.fields.proxy_number]]</td>
+                            <td>
+                                <a class="primary" id="voicemail" href="#"><i class="fas fa-voicemail"></i></a>
+                            </td>
+                            <td>
+                                <a class="primary" id="audio" href="#"><i class="fa fa-file-audio-o"></i></a>
+                            </td>
+                            <td>
+                                <a class="primary" href="#">{% icon 'info' %}</a>
+                            </td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+                {% else %}
+                <h3>No Recent Calls</h3>
+                {% endif %}
+            </div>
+        </div>
+    
+    </div>
+</div>
+<script>
+    var app = new Vue({
+      delimiters: ['[[', ']]'],
+      el: '#app',
+      data: {
+          message: 'Hello Vue!',
+          serializedcalls: serializedcalls,
+      },
+      created: function() {
+        url_mask = "{% url 'call_tracking:call_audio' 12345 %}".replace(/12345/, serializedcall.pk.toString());
+        document.getElementById("audio").href = url_mask;
+      }
+    });
+  </script>
+
+  <script>
+
+    // Store some selectors for elements we'll reuse
+    var callStatus = $("#call-status");
+    var answerButton = $(".answer-button");
+    var callSupportButton = $(".call-support-button");
+    var hangUpButton = $(".hangup-button");
+    var callCustomerButtons = $(".call-customer-button");
+    
+    /* Helper function to update the call status bar */
+    function updateCallStatus(status) {
+        callStatus.attr('placeholder', status);
+    }
+    
+    /* Get a Twilio Client token with an AJAX request */
+    $(document).ready(function() {
+        $.get("/support/token", {forPage: window.location.pathname}, function(data) {
+            // Set up the Twilio Client Device with the token
+            Twilio.Device.setup(data.token);
+        });
+    });
+    
+    /* Callback to let us know Twilio Client is ready */
+    Twilio.Device.ready(function (device) {
+        updateCallStatus("Ready");
+    });
+    
+    /* Report any errors to the call status display */
+    Twilio.Device.error(function (error) {
+        updateCallStatus("ERROR: " + error.message);
+    });
+    
+    /* Callback for when Twilio Client initiates a new connection */
+    Twilio.Device.connect(function (connection) {
+        // Enable the hang up button and disable the call buttons
+        hangUpButton.prop("disabled", false);
+        callCustomerButtons.prop("disabled", true);
+        callSupportButton.prop("disabled", true);
+        answerButton.prop("disabled", true);
+    
+        // If phoneNumber is part of the connection, this is a call from a
+        // support agent to a customer's phone
+        if ("phoneNumber" in connection.message) {
+            updateCallStatus("In call with " + connection.message.phoneNumber);
+        } else {
+            // This is a call from a website user to a support agent
+            updateCallStatus("In call with support");
+        }
+    });
+    
+    /* Callback for when a call ends */
+    Twilio.Device.disconnect(function(connection) {
+        // Disable the hangup button and enable the call buttons
+        hangUpButton.prop("disabled", true);
+        callCustomerButtons.prop("disabled", false);
+        callSupportButton.prop("disabled", false);
+    
+        updateCallStatus("Ready");
+    });
+    
+    /* Callback for when Twilio Client receives a new incoming call */
+    Twilio.Device.incoming(function(connection) {
+        updateCallStatus("Incoming support call");
+    
+        // Set a callback to be executed when the connection is accepted
+        connection.accept(function() {
+            updateCallStatus("In call with customer");
+        });
+    
+        // Set a callback on the answer button and enable it
+        answerButton.click(function() {
+            connection.accept();
+        });
+        answerButton.prop("disabled", false);
+    });
+    
+    /* Call a customer from a support ticket */
+    function callLead(phoneNumber) {
+        updateCallStatus("Calling " + phoneNumber + "...");
+    
+        var params = {"phoneNumber": phoneNumber};
+        Twilio.Device.connect(params);
+    }
+    
+    /* Call the support_agent from the home page */
+    function callSupport() {
+        updateCallStatus("Calling support...");
+    
+        // Our backend will assume that no params means a call to support_agent
+        Twilio.Device.connect();
+    }
+    
+    /* End a call */
+    function hangUp() {
+        Twilio.Device.disconnectAll();
+    }
+    </script>
+<!--/row-->
+{% endblock %}

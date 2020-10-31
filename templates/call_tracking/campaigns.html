@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% load bootstrap_tags %}
+{% load phone_number_filter %}
+{% load staticfiles %}
+{% load icons %}
+
+
+{% block title %}localCall{% endblock title %}
+{% block page_css %}
+<style>
+    .widget {
+        background-color: rgba(255, 255, 255, 0.438);
+    }
+
+    .canvas {
+        background-color: #ededee;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<h1>Campaigns</h1>
+
+<div class="row">
+
+
+    <div class="col-md-5">
+
+        <div class="container py-3 rounded widget">
+            <!-- <h2>Campaigns</h2> -->
+
+            {% if campaigns %}
+            <p><b>Add New</b></p>
+            <h3>
+                <a href="{% url 'call_tracking:new_campaign'%}">{% icon 'plus' %}</a>
+            </h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Marketing Channel</th>
+                        <th>Lead Sources</th>
+                        <th>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for campaign in campaigns %}
+                    <tr>
+                        <td>{{ campaign.name|default:"-"  }}</td>
+                        <td>{{ campaign.channel|default:"-"  }}</td>
+                        <td>{{ campaign.Lead_sources|default:"-" }}</td>
+                        <td>
+                            <a class="primary"
+                                href="{% url 'call_tracking:edit_campaign' campaign.pk %}">{% icon 'pencil' %}</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {% else %}
+            <p><b>Add New</b></p>
+            <h3>
+                <a href="{% url 'call_tracking:new_campaign'%}">{% icon 'plus' %}</a>
+            </h3>
+            {% endif %}
+        </div>
+
+    </div>
+
+</div>
+<!--/row-->
+{% endblock %}

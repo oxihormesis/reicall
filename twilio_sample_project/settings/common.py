@@ -1,13 +1,10 @@
 from django.contrib.messages import constants as messages
 """
 Common Django settings for the project.
-
 See the local, test, and production settings modules for the values used
 in each environment.
-
 For more information on this file, see
 https://docs.djangoproject.com/en/1.8/topics/settings/
-
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.8/ref/settings/
 """
@@ -32,10 +29,18 @@ if not TWIML_APPLICATION_SID:
     missing_application_sid_message = \
         """
     You *must* set a TWIML_APPLICATION_SID environment variable to run this app.
-
     Create a TwiML Application here: https://www.twilio.com/user/account/apps/add and set the Voice request URL to this value:
-
     http://{{ your ngrok/server hostname here }}/call-tracking/forward-call
+    """
+    raise ImproperlyConfigured(missing_application_sid_message)
+
+TWIML_APP_SID_BROWSERCALL = os.environ.get('TWIML_APP_SID_BROWSERCALL', None)
+if not TWIML_APP_SID_BROWSERCALL:
+    missing_application_sid_message = \
+        """
+    You *must* set a TWIML_APP_SID_BROWSERCALL environment variable to run this app.
+    Create a TwiML Application here: https://www.twilio.com/user/account/apps/add and set the Voice request URL to this value:
+    http://{{ your ngrok/server hostname here }}/call
     """
     raise ImproperlyConfigured(missing_application_sid_message)
 

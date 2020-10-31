@@ -1,22 +1,69 @@
-{% extends "base.html" %}
+{% extends "backend.html" %}
 
 {% load bootstrap_tags %}
 {% load phone_number_filter %}
 {% load staticfiles %}
 
-{% block title %}ConeCall{% endblock title %}
+{% block title %}localCall{% endblock title %}
+
+{% block page_css %}
+<style> 
+    .back {
+        background: #e2e2e2;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+      }
+      
+      .div-center {
+        
+        padding-top: 50px;
+        background-color: #fff;
+        position: relative;
+        left: 0;
+        right: 0;
+        top: 30%;
+        bottom: 0;
+        margin: auto;
+        max-width: 100%;
+        max-height: 100%;
+        overflow: auto;
+        padding: 3em 8em;
+        
+        display: table;
+        border-radius: 6rem;
+      }
+      
+      div.action__wrapper {
+        display: table-cell;
+        vertical-align: middle;
+      }
+      div.btn-row a {
+          text-emphasis: none;
+          text-decoration: none;
+          color: white;
+      }
+</style>
+{% endblock %}
 
 {% block content %}
-<h1>Signup For Free Today!</h1>
-<row>
-    <div>
-        <button class="signup-btn" type="button">
-            <a href="/accounts/signup/">Signup</a>
-        </button>
-        or
-        <button class="login-btn" type="button">
-            <a href="/accounts/login/">Login</a>
-        </button>
+<div class="">
+    <div class="div-center">
+        <div class="action__wrapper">
+            <h1>Signup For Free Today!</h1>
+            <row>
+                <div class="btn-row div-center">
+                    <button class="signup-btn btn btn-primary" type="button">
+                        <a href="/accounts/signup/">Signup</a>
+                    </button>
+                    or
+                    <button class="login-btn btn btn-primary" type="button">
+                        <a href="/accounts/login/">Login</a>
+                    </button>
+                </div>
+            </row>
+        </div>
     </div>
-</row>
+</div>
 {% endblock %}

@@ -1,0 +1,324 @@
+{% extends "base.html" %}
+
+{% load bootstrap_tags %}
+{% load phone_number_filter %}
+{% load staticfiles %}
+{% load icons %}
+
+
+{% block title %}localCall{% endblock title %}
+{% block page_css %}
+<style>
+    .widget {
+        background-color: rgba(255, 255, 255, 0.438);
+    }
+
+    .canvas {
+        background-color: #ededee;
+    }
+
+    .card-header {
+        margin: 0;
+    }
+    
+    *{box-sizing: border-box;}
+
+    /* Button used to open the chat form - fixed at the bottom of the page */
+    .open-button {
+      background-color: #555;
+      color: white;
+      padding: 16px 20px;
+      border: none;
+      cursor: pointer;
+      opacity: 0.8;
+      position: fixed;
+      bottom: 23px;
+      right: 28px;
+    }
+    
+    /* The popup chat - hidden by default */
+    .chat-popup {
+      display: block;
+      position: fixed;
+      bottom: 0;
+      right: 15px;
+      border: 3px solid #f1f1f1;
+      z-index: 9;
+    }
+    
+    /* Add styles to the form container */
+    .form-container {
+      max-width: 300px;
+      padding: 10px;
+      background-color: white;
+    }
+    
+    /* Add some hover effects to buttons */
+    .form-container .btn:hover, .open-button:hover {
+      opacity: 1;
+    } 
+</style>
+{% endblock %}
+{% block content %}
+<h1>Recents</h1>
+
+<div class="row">
+
+
+    <div class="col">
+
+        <div class="container py-3 rounded-bottom widget">
+
+            {% if calls %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Lead</th>
+                        <th>Date &amp Time</th>
+                        <th>Source &amp Proxy</th>
+                        <th>Forwarding Number</th>
+                        <th>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for call in calls %}
+                    <tr>
+                        <td>
+                            {% if call.inbound %}
+
+                            {% else %}
+                            {% endif %}
+                        </td>
+                        <td>{{ call.lead_number }}
+                            <div class="col col-auto">            
+                                <button onclick="callLead('{{ call.lead_number }}', '{{ call.id }}')" type="button" class="btn btn-outline-primary call-customer-button">
+                                Call
+                                </button>
+                                </div>  
+                        </td>
+                        <td>{{ call.start_timestamp }}</td>
+                        <td>{{ call.lead_source }}</td>
+                        <td>{{ call.forwarding_number.as_national|default:"-" }}</td>
+                        <td>   
+                            
+                        </td>
+                        <td>
+                            <a class="primary" href="#">{% icon 'info' %}</a>
+                        </td>
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <h3>No Recent Calls</h3>
+            {% endif %}
+        </div>
+
+    </div>
+
+</div>
+
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+<button class="open-button btn-secondary" onclick="openForm()">{% icon 'plus' %}</button>
+<div class="chat-popup" id="myForm">
+    
+        <div class="card">
+            <div class="card-header row justify-content-between align-middle">
+                <h5>Connection</h5>
+                <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+            </div>
+
+            <div class="card-body">
+            <div class="form-group row">
+                <label for="call-status" class="col-3 col-form-label">Status</label>
+                <div class="col-9">
+                <input id="call-status" class="form-control" type="text" placeholder="Connecting to Twilio..." readonly>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-9">
+                <form onsubmit="callNum('{{ user }}')">
+                <input value="" id="call-number" class="form-control" type="text" placeholder="Enter Number">
+                </form>
+            </div>
+            </div>
+            
+            <div class="row justify-content-around">
+                <button class="btn btn-lg btn-primary answer-button" disabled>
+                    Answer
+                </button>
+                <p></p>
+                <button class="btn btn-lg btn-danger hangup-button" disabled onclick="hangUp()">
+                    End
+                </button>
+            </div>
+
+            </div>
+        </div>
+
+</div>
+
+<!-- <div class="container">
+    <div class="row">
+      <div class="col-md-5 order-md-2 mb-4">
+        <div class="card">
+          <h5 class="card-header">
+            Make a call
+          </h5>
+
+          <div class="card-body">
+            <div class="form-group row">
+              <label for="call-status" class="col-3 col-form-label">Status</label>
+              <div class="col-9">
+                <input id="call-status" class="form-control" type="text" placeholder="Connecting to Twilio..." readonly>
+              </div>
+            </div>
+
+            <button class="btn btn-lg btn-primary answer-button" disabled>
+              Answer call
+            </button>
+            
+            <button class="btn btn-lg btn-danger hangup-button" disabled onclick="hangUp()">
+              Hang up
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div> -->
+<script type="text/javascript">
+    function openForm() {
+        document.getElementById("myForm").style.display = "block";
+      }
+      
+      function closeForm() {
+        document.getElementById("myForm").style.display = "none";
+      } 
+</script>
+<script type="text/javascript" src="https://media.twiliocdn.com/sdk/js/client/v1.8/twilio.min.js"></script>  
+<script>
+// Store some selectors for elements we'll reuse
+var callStatus = $("#call-status");
+var answerButton = $(".answer-button");
+var callSupportButton = $(".call-support-button");
+var hangUpButton = $(".hangup-button");
+var callCustomerButtons = $(".call-customer-button");
+
+/* Helper function to update the call status bar */
+function updateCallStatus(status) {
+    callStatus.attr('placeholder', status);
+}
+
+/* Get a Twilio Client token with an AJAX request */
+$(document).ready(function() {
+    $.get("{% url 'call_tracking:get_call_token' %}", {forPage: window.location.pathname}, function(data) {
+        // Set up the Twilio Client Device with the token
+        Twilio.Device.setup(data.token);
+    });
+});
+
+/* Callback to let us know Twilio Client is ready */
+Twilio.Device.ready(function (device) {
+    updateCallStatus("Ready");
+});
+
+/* Report any errors to the call status display */
+Twilio.Device.error(function (error) {
+    updateCallStatus("ERROR: " + error.message);
+});
+
+/* Callback for when Twilio Client initiates a new connection */
+Twilio.Device.connect(function (connection) {
+    // Enable the hang up button and disable the call buttons
+    hangUpButton.prop("disabled", false);
+    callCustomerButtons.prop("disabled", true);
+    callSupportButton.prop("disabled", true);
+    answerButton.prop("disabled", true);
+
+    // If phoneNumber is part of the connection, this is a call from a
+    // support agent to a customer's phone
+    if ("phoneNumber" in connection.message) {
+        updateCallStatus("In call with " + connection.message.phoneNumber);
+    } else {
+        // This is a call from a website user to a support agent
+        updateCallStatus("In call with support");
+    }
+});
+
+/* Callback for when a call ends */
+Twilio.Device.disconnect(function(connection) {
+    // Disable the hangup button and enable the call buttons
+    hangUpButton.prop("disabled", true);
+    callCustomerButtons.prop("disabled", false);
+    callSupportButton.prop("disabled", false);
+
+    updateCallStatus("Ready");
+});
+
+/* Callback for when Twilio Client receives a new incoming call */
+Twilio.Device.incoming(function(connection) {
+    updateCallStatus("Incoming support call");
+
+    // Set a callback to be executed when the connection is accepted
+    connection.accept(function() {
+        updateCallStatus("In call with customer");
+    });
+
+    // Set a callback on the answer button and enable it
+    answerButton.click(function() {
+        connection.accept();
+    });
+    answerButton.prop("disabled", false);
+
+    /* ST with an AJAX request */
+    /* $.get("{% url 'call_tracking:get_caller_info' %}", {number: }, function(data) {
+        // Set up the Twilio Client Device with the token
+        CallerInfoWidget(data);
+    }, "json"); */
+});
+
+/* Call a customer from a support ticket */
+function callLead(clientphoneNumber, leadID) {
+    updateCallStatus("Calling " + clientphoneNumber + "...");
+
+    var params = {"clientphoneNumber": clientphoneNumber, "leadID": leadID};
+    Twilio.Device.connect(params);
+    console.log(params);
+}
+/* Call any number */
+function callNum(user) {
+    var num = document.getElementById("call-number").value
+    updateCallStatus("Calling " + num + "...");
+
+    var params = {"outNumber": num, "user": user};
+    Twilio.Device.connect(params);
+    console.log(params);
+}
+
+/* Call the support_agent from the home page */
+function callSupport() {
+    updateCallStatus("Calling support...");
+
+    // Our backend will assume that no params means a call to support_agent
+    Twilio.Device.connect();
+}
+
+/* End a call */
+function hangUp() {
+    Twilio.Device.disconnectAll();
+}
+</script>
+<!--/row-->
+{% endblock %}

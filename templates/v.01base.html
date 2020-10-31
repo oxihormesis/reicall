@@ -1,0 +1,145 @@
+{% load bootstrap4 %}
+{% load icons %}
+{% load static from staticfiles %}
+
+
+<!DOCTYPE html>
+<html lang="en" style="height: 100%;">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>{% block title %}{% endblock title %} - Twilio Call Tracking</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <!--[if lt IE 9]>
+      <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+  <!-- CSS -->
+  {% bootstrap_css %}
+  {% bootstrap_javascript jquery='full' %}
+  <!-- Font Awesome CSS -->
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
+    integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+  <link rel="stylesheet" href="{% static 'main.css'%}">
+  <style>
+    body {}
+
+    .nav-item {
+      text-decoration: none;
+      list-style: none;
+    }
+
+    .sidenav {
+      height: 100%;
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 0;
+      left: 0;
+      background-color: #111;
+      overflow-x: hidden;
+      padding-top: 20px;
+    }
+
+    .sidenav a {
+      padding: 6px 6px 6px 32px;
+      text-decoration: none;
+      font-size: 25px;
+      color: #818181;
+      display: block;
+    }
+
+    .sidenav a:hover {
+      color: #f1f1f1;
+    }
+
+    .main {
+      margin-left: 200px;
+      /* Same as the width of the sidenav */
+    }
+
+    @media screen and (max-height: 450px) {
+      .sidenav {
+        padding-top: 15px;
+      }
+
+      .sidenav a {
+        font-size: 18px;
+      }
+    }
+  </style>
+  {% block page_css %}
+  {% endblock page_css%}
+</head>
+
+<body style="height: 100%;">
+
+  <div class="navbar navbar-default navbar-static-top bg-dark" style="background-color:#16e0e0;">
+    <div class="container">
+      <a class="navbar-brand" style="color:#ffffff;" href="/">ConeCall</a>
+
+      {% if user.is_authenticated %}
+      {% else %}
+      <li class="nav-item">
+        <a href="accounts/login/">Login</a> or
+        <a href="accounts/signup/">Signup</a>
+      </li>
+      {% endif %}
+
+      <!-- Toggler/collapsibe Button -->
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </div>
+  </div>
+
+  {% if user.is_authenticated %}
+  <div class="sidenav">
+    <a href="#">Dashboard</a>
+    <a href="#">Call Funnels</a>
+    <a href="#">Analytics</a>
+    <a href="#">Leads</a>
+    <form class="logout-link" action="/accounts/logout/" method="post">
+      {% csrf_token %}
+      <button type="submit">Logout</button>
+    </form>
+    <li class="nav-item"><button><a href="#">{% icon 'user' title="User" %}</a></button></li>
+  </div>
+  {% endif %}
+
+  <div class="container-fluid" style="min-height: 100%;">
+
+    <div class="container">
+      {% if messages %}
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+        {{ message | safe }}
+      </div>
+      {% endfor %}
+      {% endif %}
+
+      {% block content %}{% endblock content %}
+
+      <br />
+
+      <footer>
+        <p>&copy; ConeCall 2019</p>
+      </footer>
+
+    </div> <!-- /container -->
+
+
+  </div>
+
+  <!-- JavaScript -->
+
+  {% block page_js %}{% endblock %}
+
+</body>
+
+</html>

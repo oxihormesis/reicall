@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% load bootstrap_tags %}
+{% load phone_number_filter %}
+{% load staticfiles %}
+{% load icons %}
+
+
+{% block title %}localCall{% endblock title %}
+{% block page_css %}
+<style>
+    .widget {
+        background-color: rgba(255, 255, 255, 0.438);
+    }
+
+    .canvas {
+        background-color: #ededee;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<h1>Phone Numbers</h1>
+
+<div class="row">
+
+
+    <div class="col-md-5">
+
+        <div class="container py-3 border-bottom rounded-top widget">
+            <h2>Buy a new number</h2>
+            <p>Create a new lead source by purchasing a new phone number. <small>(search empty for random
+                    number)</small></p>
+
+            <form class="form-inline" method="post" action="{% url 'call_tracking:available_numbers' %}">
+                {% csrf_token %}
+                {{ form|as_bootstrap_inline }}
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button type="submit" class="btn btn-primary">Search</button>
+                    </div>
+                </div>
+            </form>
+
+            <br />
+        </div>
+
+        <div class="container py-3 rounded-bottom widget">
+            <!-- <h2>Lead Sources</h2> -->
+
+            {% if PurchasedNumbers %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>LocalCall number</th>
+                        <th>Associated Source</th>
+                        <th>Forwarding number</th>
+                        <th>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for PurchasedNumber in PurchasedNumbers %}
+                    <tr>
+                        <td>{{ PurchasedNumber.phone_number.as_national }}</td>
+                        <td>{{ PurchasedNumber.lead_source }}</td>
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <p><b>Add existing number </b></p>
+            <h3>
+                <a href="{% url 'call_tracking:add_numbers' %}">{% icon 'plus' %}</a>
+            </h3>
+            {% else %}
+            <p><b>Add existing number </b></p>
+            <h3>
+                <a href="{% url 'call_tracking:add_numbers' %}">{% icon 'plus' %}</a>
+            </h3>
+            {% endif %}
+        </div>
+
+    </div>
+
+</div>
+<!--/row-->
+{% endblock %}

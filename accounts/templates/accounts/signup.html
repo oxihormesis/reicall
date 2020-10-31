@@ -1,10 +1,66 @@
-{% extends 'base.html'%}
+{% extends 'backend.html'%}
+
+{% block page_css %}
+<style> 
+    .back {
+        background: #e2e2e2;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+      }
+      
+      .div-center {
+        padding-top: 50px;
+        background-color: #fff;
+        position: relative;
+        left: 0;
+        right: 0;
+        top: 20%;
+        bottom: 0;
+        margin: auto;
+        max-width: 100%;
+        max-height: 100%;
+        overflow: auto;
+        padding: 3em 8em;
+        border-bottom: 2px solid #ccc;
+        display: table;
+        border-radius: 6rem;
+      }
+      
+      div.form__wrapper {
+        display: table-cell;
+        vertical-align: middle;
+      }
+</style>
+{% endblock %}
 
 {% block content %}
-<h1>Signup Instantly. Free to Get Started!</h1>
-<form class="site-form" action="/accounts/signup/" method="post">
-    {% csrf_token %}
-    {{form}}
-    <input type="submit" value="Signup">
-</form>
+<div class="back">
+    <div class="div-center">
+        <div class="form__wrapper">
+            <h1>Signup Instantly. Free to Get Started!</h1>
+            <hr />
+            <form class="site-form" action="/accounts/signup/" method="post">
+                {% csrf_token %}
+                
+                <table>
+                    <tr>
+                        <td>{{ form.username.label_tag }}</td>
+                        <td>{{ form.username }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ form.password1.label_tag }}</td>
+                        <td>{{ form.password1 }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ form.password2.label_tag }}</td>
+                        <td>{{ form.password2 }}</td>
+                    </tr>
+                </table>
+                <input class="btn btn-primary" type="submit" value="Signup">
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}
