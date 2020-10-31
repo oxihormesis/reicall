@@ -73,7 +73,8 @@ DJANGO_APPS = (
 )
 
 THIRD_PARTY_APPS = (
-    'bootstrap3',
+    'bootstrap4',
+    'django_icons',
     'django_forms_bootstrap'
 )
 
@@ -96,6 +97,10 @@ MIDDLEWARE_CLASSES = (
 )
 
 ROOT_URLCONF = 'twilio_sample_project.urls'
+
+LOGIN_URL = 'accounts:login'
+
+LOGIN_REDIRECT_URL = 'call_tracking:home'
 
 TEMPLATES = [
     {
@@ -148,9 +153,40 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATIC_URL = '/static/'
 
+STATICFILES_DIRS = [(os.path.join(BASE_DIR, 'assets')),]
 
 # Messages settings for Bootstrap 3
 
 MESSAGE_TAGS = {
     messages.ERROR: 'danger'
+}
+
+
+# Settings for django-icons
+DJANGO_ICONS = {
+
+    'DEFAULTS': {
+        'renderer': 'fontawesome',
+    },
+
+    'RENDERERS': {
+        'fontawesome': 'FontAwesomeRenderer',
+        'bootstrap3': 'Bootstrap3Renderer',
+    },
+
+    'ICONS': {
+
+        'delete': 'trash',
+        'edit': {
+            'name': 'pencil',
+            'title': 'Edit',
+        },
+        'feather': {
+            'renderer': 'tests.app.renderers.CustomSvgRenderer',
+        },
+        'paperplane': {
+            'renderer': 'tests.app.renderers.CustomSvgRenderer',
+        }
+    },
+
 }
