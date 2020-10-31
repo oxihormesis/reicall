@@ -1,83 +1,62 @@
 {% extends 'backend.html'%}
 
 {% block page_css %}
-<style> 
-    .back {
-        background: #e2e2e2;
-        width: 100%;
-        position: absolute;
-        top: 0;
-        bottom: 0;
-      }
-      
-      .div-center {
-        width: 400px;
-        padding-top: 50px;
-        background-color: #fff;
-        position: relative;
-        left: 0;
-        right: 0;
-        top: 30%;
-        bottom: 0;
-        margin: auto;
-        max-width: 100%;
-        max-height: 100%;
-        overflow: auto;
-        padding: 3em 8em;
-        border-bottom: 2px solid #ccc;
-        display: table;
-        border-radius: 6rem;
-      }
-      
-      div.login__wrapper {
-        display: table-cell;
-        vertical-align: middle;
-      }
+<style>
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="back">
-    <div class="div-center">
-        <div class="login__wrapper">
-            <h1>Login</h1>
-            <hr />
+<div class="container">
+    <div class="row d-flex justify-content-center">
+       <div class="form-wrapper col col-lg-7">
+        <div class="action__wrapper">
+            <div class="row my-2 d-flex justify-content-center">
+                <div class="col-10 col-lg-12 text-center">
+                    <h1>Login</h1>
+                    <hr />
+                    {% if form.errors %}
+                    <p>Your username and password didn't match. Please try again.</p>
+                    {% endif %}
 
-            {% if form.errors %}
-            <p>Your username and password didn't match. Please try again.</p>
-            {% endif %}
-
-            {% if next %}
-                {% if user.is_authenticated %}
-                <p>Your account doesn't have access to this page. To proceed,
-                please login with an account that has access.</p>
-                {% else %}
-                <p>Please login to see this page.</p>
-                {% endif %}
-            {% endif %}
-
-            <form method="post" action="{% url 'accounts:login' %}">
-                <div class="form-group">
-                    {% csrf_token %}
-                    <table>
-                        <tr>
-                            <td>{{ form.username.label_tag }}</td>
-                            <td>{{ form.username }}</td>
-                        </tr>
-                        <tr>
-                            <td>{{ form.password.label_tag }}</td>
-                            <td>{{ form.password }}</td>
-                        </tr>
-                    </table>
-                    
-                    <input class="btn btn-primary" type="submit" value="Login">
-                    <input type="hidden" name="next" value="{{ next }}">
+                    {% if next %}
+                        {% if user.is_authenticated %}
+                        <p>Your account doesn't have access to this page. To proceed,
+                        please login with an account that has access.</p>
+                        {% else %}
+                        <p>Please login to see this page.</p>
+                        {% endif %}
+                    {% endif %}
+                </div> 
+            </div>
+            <div class="row btn-row d-flex justify-content-center">
+                <div class="col-12 col-md-8 col-xl-5 my-2">
+                    <div class="row d-flex justify-content-center">
+                        <form method="post" action="{% url 'accounts:login' %}">
+                            <div class="form-group">
+                                {% csrf_token %}
+                                <div class="col-12 col-md-7 col-xl-6 my-2">
+                                    <div>{{ form.username.label_tag }}
+                                        {{ form.username }}</div>
+                                </div>
+                                <div class="col-12 col-md-7 col-xl-6 my-2">
+                                    <div>{{ form.password.label_tag }}
+                                        {{ form.password }}</div>
+                                </div>
+                                <div class="col-12 col-md-7 col-xl-6 my-2">
+                                    <div>
+                                        <input class="btn btn-primary" type="submit" value="Login">
+                                        <input type="hidden" name="next" value="{{ next }}">
+                                    </div>
+                                </div>
+                                {# Assumes you setup the password_reset view in your URLconf #}
+                                <p><a href="{% url 'accounts:password_reset' %}">Forgot password</a></p>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </form>
-                
-            {# Assumes you setup the password_reset view in your URLconf #}
-            <p><a href="{% url 'accounts:password_reset' %}">Forgot password</a></p>
+            </div>
         </div>
+       </div>
     </div>
 </div>
 {% endblock %}
