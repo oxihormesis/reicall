@@ -35,7 +35,7 @@
     }
   },
   "scripts": {
-    "postdeploy": "./postdeploy.sh"
+    "postdeploy": "python manage.py makemigrations call_tracking && python manage.py makemigrations && python manage.py migrate"
   },
   "website": "https://github.com/oxihormesis/call-tracking-django",
   "logo": "https://s3.amazonaws.com/howtodocs/twilio-logo.png",
